@@ -1,0 +1,2 @@
+# 零外部依赖 - 仅使用 Python 标准库
+# Web UI 使用内置 http.server 实现

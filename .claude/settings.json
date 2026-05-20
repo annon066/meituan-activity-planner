@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python main.py --input \"今天下午是空的，想和老婆孩子出去玩几个小时，孩子5岁，老婆在减肥\")",
+      "Bash(python3 main.py --input \"今天下午是空的，想和老婆孩子出去玩几个小时，孩子5岁，老婆在减肥\")",
+      "Bash(python3 main.py --input \"周末想和4个朋友聚会，2男2女，下午有空，别离家太远\")"
+    ]
+  }
+}
