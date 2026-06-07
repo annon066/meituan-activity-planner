@@ -175,10 +175,10 @@ class ActivityPlanner:
         self.location_tool = LocationTool()
         self.planning_tool = PlanningTool()
     
-    def plan(self, intent: UserIntent, user_name: str = "小明") -> ActivityPlan:
+    def plan(self, intent: UserIntent, user_name: str = "小明", home_address: str = None) -> ActivityPlan:
         """生成活动计划"""
         # 1. 获取用户位置
-        home_location = self._get_home_location()
+        home_location = self._get_home_location(home_address)
         
         # 2. 规划活动组合
         activities = self._plan_activities(intent, home_location)
@@ -198,8 +198,16 @@ class ActivityPlanner:
         
         return plan
     
-    def _get_home_location(self) -> Location:
+    def _get_home_location(self, home_address: str = None) -> Location:
         """获取用户位置"""
+        if home_address:
+            return Location(
+                name=home_address,
+                address=home_address,
+                latitude=39.99,
+                longitude=116.48,
+                distance_km=0
+            )
         loc = self.location_tool.get_current_location()
         return Location(
             name=loc["name"],
@@ -389,14 +397,17 @@ class ActivityPlanner:
         conflicts: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """解决时间冲突"""
-        # 简化处理：压缩时间
         for conflict in conflicts:
-            # 找到冲突的活动并压缩
             for a in activities:
                 if a.get("name") == conflict.get("activity1"):
                     a["duration_minutes"] = int(a.get("duration_minutes", 60) * 0.8)
-        
+
         # 重新分配时间
+        if activities and len(activities) > 1:
+            start = activities[0].get("start_time", "14:00")
+            end = activities[-1].get("end_time", "18:00")
+            activities = self.planning_tool.allocate_time(start, end, activities)
+
         return activities
     
     def _build_plan(
